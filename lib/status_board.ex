@@ -29,8 +29,8 @@ defmodule StatusBoard.GithubAPI do
 
   @url "https://api.github.com/graphql"
 
-  def call(query) do
-    encode(query)
+  def call(query, variables) do
+    encode(query, variables)
     |> fetch()
     |> decode()
   end
@@ -47,8 +47,8 @@ defmodule StatusBoard.GithubAPI do
     ]
   end
 
-  defp encode(query_str) do
-    JSON.encode!(%{query: query_str})
+  defp encode(query_str, variables) do
+    JSON.encode!(%{query: query_str, variables: variables})
   end
 
   defp decode(%{body: body}) do
@@ -90,7 +90,7 @@ defmodule StatusBoard.GithubIssues do
         }
       }
     """
-    API.call(query)
+    API.call(query, %{})
     |> handle_closed
   end
 
@@ -112,19 +112,23 @@ defmodule StatusBoard.GithubIssues do
 
   def open_bugs do
     query = """
-      {
+      query openIssues($cursor: String) {
         repository(owner: "gramo-org", name: "echo") {
-          issues(first: 50, labels: ["bug"], states: [OPEN]) {
-            nodes {
-              id
-              title
-              createdAt
+          issues(first: 50, after: $cursor, labels: ["bug"], states: [OPEN]) {
+            edges {
+              cursor
+              node {
+                id
+                title
+                createdAt
+              }
             }
           }
         }
       }
     """
-    API.call(query)
+
+    API.call(query, %{cursor: nil})
     |> handle_open
   end
 
@@ -135,12 +139,14 @@ defmodule StatusBoard.GithubIssues do
     |> Statistics.five_number_summary
   end
 
-  defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"nodes" => issues}}}}) do
-    Enum.map(issues, fn(i) ->
-      created_at = API.parse_datetime(i["createdAt"])
-      today = DateTime.utc_now()
-      duration = diff(today, created_at)
-      { i["id"], i["title"], created_at, duration }
+  defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"edges" => edges }}}}) do
+    Enum.map(edges,
+      fn(e) ->
+        i = e["node"]
+        created_at = API.parse_datetime(i["createdAt"])
+        today = DateTime.utc_now()
+        duration = diff(today, created_at)
+        { i["id"], i["title"], created_at, duration }
       end)
   end
 
