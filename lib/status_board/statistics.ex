@@ -13,30 +13,26 @@ defmodule StatusBoard.Statistics do
       iex> StatusBoard.Statistics.five_number_summary([1,2,3,4,5])
       {1, 2, 3, 4, 5}
 
+      iex> StatusBoard.Statistics.five_number_summary(Enum.shuffle([1,2,3,4,5]))
+      {1, 2, 3, 4, 5}
+
   """
   def five_number_summary([]), do: nil
   def five_number_summary(list) do
-    { min(list),
-      first_quartile(list),
-      median(list),
-      third_quartile(list),
-      max(list),
+    slist = Enum.sort(list)
+    { List.first(slist),
+      _first_quartile(slist),
+      _median(slist),
+      _third_quartile(slist),
+      List.last(slist),
     }
   end
 
-  def min([]), do: nil
-  def min(list) do
-    Enum.min(list)
-  end
+  def median(list), do: Enum.sort(list) |> _median
 
-  def max([]), do: nil
-  def max(list) do
-    Enum.max(list)
-  end
-
-  def median([]), do: nil
-  def median([e]), do: e
-  def median(list) do
+  defp _median([]), do: nil
+  defp _median([e]), do: e
+  defp _median(list) do
     mid = div(length(list), 2)
     case rem(length(list), 2) do
       0 -> (Enum.at(list, mid-1) + Enum.at(list, mid)) / 2
@@ -44,7 +40,9 @@ defmodule StatusBoard.Statistics do
     end
   end
 
-  def first_quartile(list) do
+  def first_quartile(list), do: Enum.sort(list) |> _first_quartile
+
+  defp _first_quartile(list) do
     {sublist, rest} = list |> Enum.split(div(length(list), 2))
     case rem(length(list), 2) do
       0 -> median(sublist)
@@ -52,7 +50,9 @@ defmodule StatusBoard.Statistics do
     end
   end
 
-  def third_quartile(list) do
+  def third_quartile(list), do: Enum.sort(list) |> _third_quartile
+
+  defp _third_quartile(list) do
     {_, sublist} = list |> Enum.split(div(length(list), 2))
     median(sublist)
   end

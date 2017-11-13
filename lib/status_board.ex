@@ -110,7 +110,6 @@ defmodule StatusBoard.GithubIssues do
     closed_bugs()
     |> Enum.to_list
     |> Enum.map(&(elem(&1, 3)))
-    |> Enum.sort
     |> Statistics.five_number_summary
   end
 
@@ -165,7 +164,6 @@ defmodule StatusBoard.GithubIssues do
     open_bugs()
     |> Enum.to_list
     |> Enum.map(&(elem(&1, 2)))
-    |> Enum.sort
     |> Statistics.five_number_summary
   end
 
