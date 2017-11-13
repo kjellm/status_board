@@ -71,17 +71,21 @@ defmodule StatusBoard.GithubIssues do
 
   def closed_bugs do
     query = """
-      {
-        repository(owner: "gramo-org", name: "echo") {
-          issues(first: 50, labels: ["bug"], states: [CLOSED]) {
-            nodes {
-              id
-              title
-              createdAt
-              timeline(last: 30) {
-                 nodes {
-                  ... on ClosedEvent {
-                    createdAt
+      query closedIssues($owner: String!, $name: String!, $cursor: String) {
+        repository(owner: $owner, name: $name) {
+          issues(first: 50, after: $cursor, labels: ["bug"], states: [CLOSED]) {
+            totalCount
+            pageInfo { hasNextPage }
+            edges {
+              cursor
+              node {
+                title
+                createdAt
+                timeline(last: 30) {
+                   nodes {
+                    ... on ClosedEvent {
+                      createdAt
+                    }
                   }
                 }
               }
@@ -90,23 +94,40 @@ defmodule StatusBoard.GithubIssues do
         }
       }
     """
-    API.call(query, %{})
-    |> handle_closed
+    Stream.resource(
+      fn -> nil end,
+      fn
+        (:halt) ->
+          {:halt, nil}
+        (cursor) ->
+          API.call(query, %{owner: "gramo-org", name: "echo", cursor: cursor}) |> handle_closed
+      end,
+      fn _ -> nil end
+    )
   end
 
   def closed_bugs_fns do
     closed_bugs()
-    |> Enum.map(&(elem(&1, 4)))
+    |> Enum.to_list
+    |> Enum.map(&(elem(&1, 3)))
     |> Enum.sort
     |> Statistics.five_number_summary
   end
 
-  defp handle_closed(%{"data" => %{"repository" => %{"issues" => %{"nodes" => issues}}}}) do
-    Enum.map(issues, fn(i) ->
+  defp handle_closed(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => false}, "edges" => edges }}}}) do
+    {to_closed_issues(edges), :halt}
+  end
+  defp handle_closed(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => true}, "edges" => edges }}}}) do
+    {to_closed_issues(edges), List.last(edges)["cursor"] }
+  end
+
+  defp to_closed_issues(edges) do
+    Enum.map(edges, fn(e) ->
+      i = e["node"]
       created_at = API.parse_datetime(i["createdAt"])
       closed_at  = API.parse_datetime(closed_at(i["timeline"]))
       duration = diff(closed_at, created_at)
-      { i["id"], i["title"], created_at, closed_at, duration }
+      { i["title"], created_at, closed_at, duration }
       end)
   end
 
@@ -114,7 +135,7 @@ defmodule StatusBoard.GithubIssues do
     query = """
       query openIssues($owner: String!, $name: String!, $cursor: String) {
         repository(owner: $owner, name: $name) {
-          issues(first: 100, after: $cursor, labels: ["bug"], states: [OPEN]) {
+          issues(first: 50, after: $cursor, labels: ["bug"], states: [OPEN]) {
             totalCount
             pageInfo { hasNextPage }
             edges {
