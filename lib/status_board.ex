@@ -112,13 +112,14 @@ defmodule StatusBoard.GithubIssues do
 
   def open_bugs do
     query = """
-      query openIssues($cursor: String) {
-        repository(owner: "gramo-org", name: "echo") {
-          issues(first: 50, after: $cursor, labels: ["bug"], states: [OPEN]) {
+      query openIssues($owner: String!, $name: String!, $cursor: String) {
+        repository(owner: $owner, name: $name) {
+          issues(first: 100, after: $cursor, labels: ["bug"], states: [OPEN]) {
+            totalCount
+            pageInfo { hasNextPage }
             edges {
               cursor
               node {
-                id
                 title
                 createdAt
               }
@@ -127,26 +128,42 @@ defmodule StatusBoard.GithubIssues do
         }
       }
     """
-
-    API.call(query, %{cursor: nil})
-    |> handle_open
+    Stream.resource(
+      fn -> nil end,
+      fn
+        (:halt) ->
+          {:halt, nil}
+        (cursor) ->
+          API.call(query, %{owner: "gramo-org", name: "echo", cursor: cursor}) |> handle_open
+      end,
+      fn _ -> nil end
+    )
   end
 
   def open_bugs_fns do
     open_bugs()
-    |> Enum.map(&(elem(&1, 3)))
+    |> Enum.to_list
+    |> Enum.map(&(elem(&1, 2)))
     |> Enum.sort
     |> Statistics.five_number_summary
   end
 
-  defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"edges" => edges }}}}) do
+  defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => false}, "edges" => edges }}}}) do
+    { to_open_issues(edges), :halt }
+  end
+
+  defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => true}, "edges" => edges }}}}) do
+    { to_open_issues(edges), List.last(edges)["cursor"] }
+  end
+
+  defp to_open_issues(edges) do
     Enum.map(edges,
       fn(e) ->
         i = e["node"]
         created_at = API.parse_datetime(i["createdAt"])
         today = DateTime.utc_now()
         duration = diff(today, created_at)
-        { i["id"], i["title"], created_at, duration }
+        { i["title"], created_at, duration }
       end)
   end
 
