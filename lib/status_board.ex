@@ -136,8 +136,10 @@ defmodule StatusBoard.GithubIssues do
       end)
   end
 
+  @seconds_in_a_day 86_400
+
   defp diff(%DateTime{} = dt1, %DateTime{} = dt2) do
-    DateTime.diff(dt1, dt2) / (60*60*24)
+    DateTime.diff(dt1, dt2) / (@seconds_in_a_day) |> Float.round(2)
   end
 
   defp diff(_, _) do
