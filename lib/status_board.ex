@@ -4,66 +4,6 @@ defmodule StatusBoard do
   end
 end
 
-defmodule StatusBoard.HTTPClient do
-  def post!(url, body, headers) do
-    HTTPoison.post!(url, body, headers)
-  end
-end
-
-defmodule StatusBoard.JSON do
-
-  def encode!(str) do
-    Poison.encode!(str)
-  end
-
-  def decode!(data) do
-    Poison.decode!(data)
-  end
-
-end
-
-defmodule StatusBoard.GithubAPI do
-
-  alias StatusBoard.HTTPClient
-  alias StatusBoard.JSON
-
-  @url "https://api.github.com/graphql"
-
-  def call(query, variables) do
-    encode(query, variables)
-    |> fetch()
-    |> decode()
-  end
-
-  defp fetch(body) do
-    HTTPClient.post!(@url, body, headers())
-  end
-
-  defp headers do
-    token = System.get_env("GITHUB_API_TOKEN")
-    [
-      {"User-agent", "https://github.com/kjellm/status_board"},
-      {"Authorization", "Bearer #{token}"}
-    ]
-  end
-
-  defp encode(query_str, variables) do
-    JSON.encode!(%{query: query_str, variables: variables})
-  end
-
-  defp decode(%{body: body}) do
-    JSON.decode!(body)
-  end
-
-  def parse_datetime(string) do
-    case DateTime.from_iso8601(string) do
-      { :ok, date, 0 } -> date
-      { :error, reason } -> { reason, string }
-    end
-  end
-
-end
-
 defmodule StatusBoard.GithubIssues do
 
   alias StatusBoard.GithubAPI, as: API
@@ -108,7 +48,6 @@ defmodule StatusBoard.GithubIssues do
 
   def closed_bugs_fns do
     closed_bugs()
-    |> Enum.to_list
     |> Enum.map(&(elem(&1, 3)))
     |> Statistics.five_number_summary
   end
@@ -162,7 +101,6 @@ defmodule StatusBoard.GithubIssues do
 
   def open_bugs_fns do
     open_bugs()
-    |> Enum.to_list
     |> Enum.map(&(elem(&1, 2)))
     |> Statistics.five_number_summary
   end
@@ -176,11 +114,11 @@ defmodule StatusBoard.GithubIssues do
   end
 
   defp to_open_issues(edges) do
+    today = DateTime.utc_now()
     Enum.map(edges,
       fn(e) ->
         i = e["node"]
         created_at = API.parse_datetime(i["createdAt"])
-        today = DateTime.utc_now()
         duration = diff(today, created_at)
         { i["title"], created_at, duration }
       end)
