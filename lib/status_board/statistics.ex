@@ -28,10 +28,23 @@ defmodule StatusBoard.Statistics do
     }
   end
 
+  @doc """
+
+    ## Examples
+
+      iex> StatusBoard.Statistics.median([1])
+      1
+
+      iex> StatusBoard.Statistics.median([1,2])
+      1.5
+
+      iex> StatusBoard.Statistics.median([1,2,3])
+      2
+
+  """
   def median(list), do: Enum.sort(list) |> _median
 
   defp _median([]), do: nil
-  defp _median([e]), do: e
   defp _median(list) do
     mid = div(length(list), 2)
     case rem(length(list), 2) do
