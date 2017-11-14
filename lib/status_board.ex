@@ -4,10 +4,15 @@ defmodule StatusBoard do
   end
 end
 
+defmodule StatusBoard.GithubIssue do
+  defstruct [:title, :created_at, :closed_at, :duration]
+end
+
 defmodule StatusBoard.GithubIssues do
 
   alias StatusBoard.GithubAPI, as: API
   alias StatusBoard.Statistics
+  alias StatusBoard.GithubIssue
 
   def closed_bugs do
     query = """
@@ -64,8 +69,12 @@ defmodule StatusBoard.GithubIssues do
       i = e["node"]
       created_at = API.parse_datetime(i["createdAt"])
       closed_at  = API.parse_datetime(closed_at(i["timeline"]))
-      duration = diff(closed_at, created_at)
-      { i["title"], created_at, closed_at, duration }
+      %GithubIssue{
+        title: i["title"],
+        created_at: created_at,
+        closed_at: closed_at,
+        duration: diff(closed_at, created_at)
+      }
       end)
   end
 
@@ -101,7 +110,7 @@ defmodule StatusBoard.GithubIssues do
 
   def open_bugs_fns do
     open_bugs()
-    |> Enum.map(&(elem(&1, 2)))
+    |> Enum.map(&(&1.duration))
     |> Statistics.five_number_summary
   end
 
@@ -119,8 +128,11 @@ defmodule StatusBoard.GithubIssues do
       fn(e) ->
         i = e["node"]
         created_at = API.parse_datetime(i["createdAt"])
-        duration = diff(today, created_at)
-        { i["title"], created_at, duration }
+        %GithubIssue{
+          title: i["title"],
+          created_at: created_at,
+          duration: diff(today, created_at)
+        }
       end)
   end
 
