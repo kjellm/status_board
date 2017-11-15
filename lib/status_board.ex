@@ -1,6 +1,44 @@
 defmodule StatusBoard do
+
+  alias StatusBoard.Statistics
+
   def hello() do
     :world
+  end
+
+  def init() do
+    pid = spawn(StatusBoard.GithubIssues, :foo, [])
+    Process.register(pid, :open_bugs)
+    pid = spawn(StatusBoard.GithubIssues, :bar, [])
+    Process.register(pid, :closed_bugs)
+  end
+
+  def open_bugs_fns do
+    open_bugs()
+    |> Enum.map(&(&1.duration))
+    |> Statistics.five_number_summary
+  end
+
+  def closed_bugs_fns do
+    closed_bugs()
+    |> Enum.map(&(&1.duration))
+    |> Statistics.five_number_summary
+  end
+
+  def open_bugs() do
+    pid = Process.whereis(:open_bugs)
+    send pid, {self(), :get}
+    receive do
+      {:ok, bugs} -> bugs
+    end
+  end
+
+  def closed_bugs() do
+    pid = Process.whereis(:closed_bugs)
+    send pid, {self(), :get}
+    receive do
+      {:ok, bugs} -> bugs
+    end
   end
 end
 
@@ -11,7 +49,6 @@ end
 defmodule StatusBoard.GithubIssues do
 
   alias StatusBoard.GithubAPI, as: API
-  alias StatusBoard.Statistics
   alias StatusBoard.GithubIssue
 
   def closed_bugs do
@@ -49,12 +86,6 @@ defmodule StatusBoard.GithubIssues do
       end,
       fn _ -> nil end
     )
-  end
-
-  def closed_bugs_fns do
-    closed_bugs()
-    |> Enum.map(&(elem(&1, 3)))
-    |> Statistics.five_number_summary
   end
 
   defp handle_closed(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => false}, "edges" => edges }}}}) do
@@ -108,12 +139,6 @@ defmodule StatusBoard.GithubIssues do
     )
   end
 
-  def open_bugs_fns do
-    open_bugs()
-    |> Enum.map(&(&1.duration))
-    |> Statistics.five_number_summary
-  end
-
   defp handle_open(%{"data" => %{"repository" => %{"issues" => %{"pageInfo" => %{"hasNextPage" => false}, "edges" => edges }}}}) do
     { to_open_issues(edges), :halt }
   end
@@ -151,4 +176,33 @@ defmodule StatusBoard.GithubIssues do
     |> Enum.reject(&is_nil/1)
     |> List.first
   end
+
+  def foo(issues \\ []) do
+    issues = _foo(issues)
+    receive do
+      {sender, :get} -> send sender, {:ok, issues}
+    end
+    foo(issues)
+  end
+
+  defp _foo([]) do
+    open_bugs() |> Enum.to_list
+  end
+
+  defp _foo(issues), do: issues
+
+  def bar(issues \\ []) do
+    issues = _bar(issues)
+    receive do
+      {sender, :get} -> send sender, {:ok, issues}
+    end
+    bar(issues)
+  end
+
+  defp _bar([]) do
+    closed_bugs() |> Enum.to_list
+  end
+
+  defp _bar(issues), do: issues
+
 end
