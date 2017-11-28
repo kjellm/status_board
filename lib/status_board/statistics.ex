@@ -30,6 +30,34 @@ defmodule StatusBoard.Statistics do
 
   @doc """
 
+  Inter quartile range
+
+  """
+  def iqr({ _, quart1, _, quart3, _}) do
+    quart3 - quart1
+  end
+
+  def five_number_summary_with_outliers([]), do: nil
+  def five_number_summary_with_outliers(list) do
+    slist = Enum.sort(list)
+    fns = five_number_summary(slist)
+    { q0, q1, m, q3, q4} = fns
+    iqr = iqr(fns)
+    limit = iqr * 1.5
+    min = Enum.find slist, fn(x) -> x >= q1 - limit end
+    max = slist |> Enum.reverse |> Enum.find(slist, fn(x) -> x <= q3 + limit end)
+    { {min, q1, m, q3, max}, {q0, q4}, Enum.sort(outliers(list, fns)) }
+  end
+
+  defp outliers(list, fns) do
+    iqr = iqr(fns)
+    limit = iqr * 1.5
+    Enum.filter(list, fn(x) -> x > elem(fns, 3) + limit || x < elem(fns, 1) - limit end)
+  end
+
+
+  @doc """
+
     ## Examples
 
       iex> StatusBoard.Statistics.median([1])

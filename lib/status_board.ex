@@ -16,13 +16,13 @@ defmodule StatusBoard do
   def open_bugs_fns do
     open_bugs()
     |> Enum.map(&(&1.duration))
-    |> Statistics.five_number_summary
+    |> Statistics.five_number_summary_with_outliers
   end
 
   def closed_bugs_fns do
     closed_bugs()
     |> Enum.map(&(&1.duration))
-    |> Statistics.five_number_summary
+    |> Statistics.five_number_summary_with_outliers
   end
 
   def open_bugs() do
