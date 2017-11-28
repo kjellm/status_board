@@ -41,14 +41,14 @@ model =
           , realMax = 760
           , outliers = [ 0, 520, 680, 760 ]
           }
-        , { realMin = 0
-          , min = 20
-          , firstQuartile = 200
-          , median = 240
-          , thirdQuartile = 300
+        , { realMin = 30
+          , min = 200
+          , firstQuartile = 300
+          , median = 350
+          , thirdQuartile = 400
           , max = 500
-          , realMax = 760
-          , outliers = [ 0, 520, 680, 760 ]
+          , realMax = 600
+          , outliers = [ 30, 680 ]
           }
         ]
     }
@@ -59,6 +59,7 @@ update msg model =
     model
 
 
+view : Model -> H.Html msgq
 view model =
     H.div []
         [ H.h1 []
@@ -76,79 +77,83 @@ view model =
                 , stroke "#000"
                 , strokeWidth "1"
                 ]
-                [ (g [ transform "translate(140, 20)" ] (boxplot (List.head model.boxplots)))
-                , line [ y1 "20", x1 "60", y2 "780", x2 "60", stroke "#000" ] []
-                , line [ y1 "20", x1 "55", y2 "20", x2 "65", stroke "#000" ] []
-                , line [ y1 "780", x1 "55", y2 "780", x2 "65", stroke "#000" ] []
-                ]
+                (List.concat
+                    [ (List.map2
+                        (\b n -> g [ transform ("translate(" ++ (toString (n * 140)) ++ ", 20)") ] (boxplot b))
+                        model.boxplots
+                        (List.range 1 10)
+                      )
+                    , [ line [ y1 "20", x1 "60", y2 "780", x2 "60", stroke "#000" ] []
+                      , line [ y1 "20", x1 "55", y2 "20", x2 "65", stroke "#000" ] []
+                      , line [ y1 "780", x1 "55", y2 "780", x2 "65", stroke "#000" ] []
+                      , text_ [ x "20", y "780", strokeWidth "0", fontSize "8pt", fontWeight "normal", fill "#000" ] [ text "0" ]
+                      , text_ [ x "20", y "20", strokeWidth "0", fontSize "8pt", fontWeight "normal", fill "#000" ] [ text "760" ]
+                      ]
+                    ]
+                )
             ]
         ]
 
 
-boxplot : Maybe Boxplot -> List (Svg msg)
+boxplot : Boxplot -> List (Svg msg)
 boxplot data =
-    case data of
-        Nothing ->
-            [ text "NA" ]
-
-        Just data ->
-            List.concat
-                [ [ line
-                        [ x1 "0"
-                        , y1 (data.min |> flipY |> toString)
-                        , x2 "20"
-                        , y2 (data.min |> flipY |> toString)
-                        ]
-                        []
-                  , line
-                        [ x1 "10"
-                        , y1 (data.min |> flipY |> toString)
-                        , x2 "10"
-                        , y2 (data.firstQuartile |> flipY |> toString)
-                        ]
-                        []
-                  , rect
-                        [ x "0"
-                        , y (data.thirdQuartile |> flipY |> toString)
-                        , height ((data.thirdQuartile - data.firstQuartile) |> toString)
-                        , width "20"
-                        ]
-                        []
-                  , line
-                        [ x1 "0"
-                        , y1 (data.median |> flipY |> toString)
-                        , x2 "20"
-                        , y2 (data.median |> flipY |> toString)
-                        ]
-                        []
-                  , line
-                        [ x1 "10"
-                        , y1 (data.thirdQuartile |> flipY |> toString)
-                        , x2 "10"
-                        , y2 (data.max |> flipY |> toString)
-                        ]
-                        []
-                  , line
-                        [ x1 "0"
-                        , y1 (data.max |> flipY |> toString)
-                        , x2 "20"
-                        , y2 (data.max |> flipY |> toString)
-                        ]
-                        []
-                  ]
-                , (List.map
-                    (\n ->
-                        circle
-                            [ cx "10"
-                            , cy (n |> flipY |> toString)
-                            , r "2"
-                            , strokeWidth "0.5"
-                            ]
-                            []
-                    )
-                    data.outliers
-                  )
+    List.concat
+        [ [ line
+                [ x1 "0"
+                , y1 (data.min |> flipY |> toString)
+                , x2 "20"
+                , y2 (data.min |> flipY |> toString)
                 ]
+                []
+          , line
+                [ x1 "10"
+                , y1 (data.min |> flipY |> toString)
+                , x2 "10"
+                , y2 (data.firstQuartile |> flipY |> toString)
+                ]
+                []
+          , rect
+                [ x "0"
+                , y (data.thirdQuartile |> flipY |> toString)
+                , height ((data.thirdQuartile - data.firstQuartile) |> toString)
+                , width "20"
+                ]
+                []
+          , line
+                [ x1 "0"
+                , y1 (data.median |> flipY |> toString)
+                , x2 "20"
+                , y2 (data.median |> flipY |> toString)
+                ]
+                []
+          , line
+                [ x1 "10"
+                , y1 (data.thirdQuartile |> flipY |> toString)
+                , x2 "10"
+                , y2 (data.max |> flipY |> toString)
+                ]
+                []
+          , line
+                [ x1 "0"
+                , y1 (data.max |> flipY |> toString)
+                , x2 "20"
+                , y2 (data.max |> flipY |> toString)
+                ]
+                []
+          ]
+        , (List.map
+            (\n ->
+                circle
+                    [ cx "10"
+                    , cy (n |> flipY |> toString)
+                    , r "2"
+                    , strokeWidth "0.5"
+                    ]
+                    []
+            )
+            data.outliers
+          )
+        ]
 
 
 flipY y =

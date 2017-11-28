@@ -8460,38 +8460,55 @@ var _user$project$Main$flipY = function (y) {
 	return 760 - y;
 };
 var _user$project$Main$boxplot = function (data) {
-	var _p0 = data;
-	if (_p0.ctor === 'Nothing') {
-		return {
+	return _elm_lang$core$List$concat(
+		{
 			ctor: '::',
-			_0: _elm_lang$svg$Svg$text('NA'),
-			_1: {ctor: '[]'}
-		};
-	} else {
-		var _p1 = _p0._0;
-		return _elm_lang$core$List$concat(
-			{
+			_0: {
 				ctor: '::',
-				_0: {
+				_0: A2(
+					_elm_lang$svg$Svg$line,
+					{
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$x1('0'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$y1(
+								_elm_lang$core$Basics$toString(
+									_user$project$Main$flipY(data.min))),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$x2('20'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$y2(
+										_elm_lang$core$Basics$toString(
+											_user$project$Main$flipY(data.min))),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
 					ctor: '::',
 					_0: A2(
 						_elm_lang$svg$Svg$line,
 						{
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$x1('0'),
+							_0: _elm_lang$svg$Svg_Attributes$x1('10'),
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$svg$Svg_Attributes$y1(
 									_elm_lang$core$Basics$toString(
-										_user$project$Main$flipY(_p1.min))),
+										_user$project$Main$flipY(data.min))),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$x2('20'),
+									_0: _elm_lang$svg$Svg_Attributes$x2('10'),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$svg$Svg_Attributes$y2(
 											_elm_lang$core$Basics$toString(
-												_user$project$Main$flipY(_p1.min))),
+												_user$project$Main$flipY(data.firstQuartile))),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -8501,23 +8518,22 @@ var _user$project$Main$boxplot = function (data) {
 					_1: {
 						ctor: '::',
 						_0: A2(
-							_elm_lang$svg$Svg$line,
+							_elm_lang$svg$Svg$rect,
 							{
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$x1('10'),
+								_0: _elm_lang$svg$Svg_Attributes$x('0'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$y1(
+									_0: _elm_lang$svg$Svg_Attributes$y(
 										_elm_lang$core$Basics$toString(
-											_user$project$Main$flipY(_p1.min))),
+											_user$project$Main$flipY(data.thirdQuartile))),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$x2('10'),
+										_0: _elm_lang$svg$Svg_Attributes$height(
+											_elm_lang$core$Basics$toString(data.thirdQuartile - data.firstQuartile)),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$y2(
-												_elm_lang$core$Basics$toString(
-													_user$project$Main$flipY(_p1.firstQuartile))),
+											_0: _elm_lang$svg$Svg_Attributes$width('20'),
 											_1: {ctor: '[]'}
 										}
 									}
@@ -8527,22 +8543,23 @@ var _user$project$Main$boxplot = function (data) {
 						_1: {
 							ctor: '::',
 							_0: A2(
-								_elm_lang$svg$Svg$rect,
+								_elm_lang$svg$Svg$line,
 								{
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$x('0'),
+									_0: _elm_lang$svg$Svg_Attributes$x1('0'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$y(
+										_0: _elm_lang$svg$Svg_Attributes$y1(
 											_elm_lang$core$Basics$toString(
-												_user$project$Main$flipY(_p1.thirdQuartile))),
+												_user$project$Main$flipY(data.median))),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$height(
-												_elm_lang$core$Basics$toString(_p1.thirdQuartile - _p1.firstQuartile)),
+											_0: _elm_lang$svg$Svg_Attributes$x2('20'),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$width('20'),
+												_0: _elm_lang$svg$Svg_Attributes$y2(
+													_elm_lang$core$Basics$toString(
+														_user$project$Main$flipY(data.median))),
 												_1: {ctor: '[]'}
 											}
 										}
@@ -8555,20 +8572,20 @@ var _user$project$Main$boxplot = function (data) {
 									_elm_lang$svg$Svg$line,
 									{
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$x1('0'),
+										_0: _elm_lang$svg$Svg_Attributes$x1('10'),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$svg$Svg_Attributes$y1(
 												_elm_lang$core$Basics$toString(
-													_user$project$Main$flipY(_p1.median))),
+													_user$project$Main$flipY(data.thirdQuartile))),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$x2('20'),
+												_0: _elm_lang$svg$Svg_Attributes$x2('10'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$svg$Svg_Attributes$y2(
 														_elm_lang$core$Basics$toString(
-															_user$project$Main$flipY(_p1.median))),
+															_user$project$Main$flipY(data.max))),
 													_1: {ctor: '[]'}
 												}
 											}
@@ -8581,92 +8598,65 @@ var _user$project$Main$boxplot = function (data) {
 										_elm_lang$svg$Svg$line,
 										{
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$x1('10'),
+											_0: _elm_lang$svg$Svg_Attributes$x1('0'),
 											_1: {
 												ctor: '::',
 												_0: _elm_lang$svg$Svg_Attributes$y1(
 													_elm_lang$core$Basics$toString(
-														_user$project$Main$flipY(_p1.thirdQuartile))),
+														_user$project$Main$flipY(data.max))),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$x2('10'),
+													_0: _elm_lang$svg$Svg_Attributes$x2('20'),
 													_1: {
 														ctor: '::',
 														_0: _elm_lang$svg$Svg_Attributes$y2(
 															_elm_lang$core$Basics$toString(
-																_user$project$Main$flipY(_p1.max))),
+																_user$project$Main$flipY(data.max))),
 														_1: {ctor: '[]'}
 													}
 												}
 											}
 										},
 										{ctor: '[]'}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$svg$Svg$line,
-											{
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$x1('0'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$y1(
-														_elm_lang$core$Basics$toString(
-															_user$project$Main$flipY(_p1.max))),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$x2('20'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$y2(
-																_elm_lang$core$Basics$toString(
-																	_user$project$Main$flipY(_p1.max))),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}
+									_1: {ctor: '[]'}
 								}
 							}
 						}
 					}
-				},
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$core$List$map,
-						function (n) {
-							return A2(
-								_elm_lang$svg$Svg$circle,
-								{
+				}
+			},
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$core$List$map,
+					function (n) {
+						return A2(
+							_elm_lang$svg$Svg$circle,
+							{
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$cx('10'),
+								_1: {
 									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$cx('10'),
+									_0: _elm_lang$svg$Svg_Attributes$cy(
+										_elm_lang$core$Basics$toString(
+											_user$project$Main$flipY(n))),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$cy(
-											_elm_lang$core$Basics$toString(
-												_user$project$Main$flipY(n))),
+										_0: _elm_lang$svg$Svg_Attributes$r('2'),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$r('2'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5'),
-												_1: {ctor: '[]'}
-											}
+											_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0.5'),
+											_1: {ctor: '[]'}
 										}
 									}
-								},
-								{ctor: '[]'});
-						},
-						_p1.outliers),
-					_1: {ctor: '[]'}
-				}
-			});
-	}
+								}
+							},
+							{ctor: '[]'});
+					},
+					data.outliers),
+				_1: {ctor: '[]'}
+			}
+		});
 };
 var _user$project$Main$view = function (model) {
 	return A2(
@@ -8726,85 +8716,49 @@ var _user$project$Main$view = function (model) {
 									}
 								}
 							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$svg$Svg$g,
-									{
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$transform('translate(140, 20)'),
-										_1: {ctor: '[]'}
-									},
-									_user$project$Main$boxplot(
-										_elm_lang$core$List$head(model.boxplots))),
-								_1: {
+							_elm_lang$core$List$concat(
+								{
 									ctor: '::',
-									_0: A2(
-										_elm_lang$svg$Svg$line,
-										{
-											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$y1('20'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$x1('60'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$y2('780'),
-													_1: {
+									_0: A3(
+										_elm_lang$core$List$map2,
+										F2(
+											function (b, n) {
+												return A2(
+													_elm_lang$svg$Svg$g,
+													{
 														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$x2('60'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
-															_1: {ctor: '[]'}
-														}
-													}
-												}
-											}
-										},
-										{ctor: '[]'}),
+														_0: _elm_lang$svg$Svg_Attributes$transform(
+															A2(
+																_elm_lang$core$Basics_ops['++'],
+																'translate(',
+																A2(
+																	_elm_lang$core$Basics_ops['++'],
+																	_elm_lang$core$Basics$toString(n * 140),
+																	', 20)'))),
+														_1: {ctor: '[]'}
+													},
+													_user$project$Main$boxplot(b));
+											}),
+										model.boxplots,
+										A2(_elm_lang$core$List$range, 1, 10)),
 									_1: {
 										ctor: '::',
-										_0: A2(
-											_elm_lang$svg$Svg$line,
-											{
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$y1('20'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$x1('55'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$y2('20'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$svg$Svg_Attributes$x2('65'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
-																_1: {ctor: '[]'}
-															}
-														}
-													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {
+										_0: {
 											ctor: '::',
 											_0: A2(
 												_elm_lang$svg$Svg$line,
 												{
 													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$y1('780'),
+													_0: _elm_lang$svg$Svg_Attributes$y1('20'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$svg$Svg_Attributes$x1('55'),
+														_0: _elm_lang$svg$Svg_Attributes$x1('60'),
 														_1: {
 															ctor: '::',
 															_0: _elm_lang$svg$Svg_Attributes$y2('780'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$svg$Svg_Attributes$x2('65'),
+																_0: _elm_lang$svg$Svg_Attributes$x2('60'),
 																_1: {
 																	ctor: '::',
 																	_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
@@ -8815,11 +8769,135 @@ var _user$project$Main$view = function (model) {
 													}
 												},
 												{ctor: '[]'}),
-											_1: {ctor: '[]'}
-										}
+											_1: {
+												ctor: '::',
+												_0: A2(
+													_elm_lang$svg$Svg$line,
+													{
+														ctor: '::',
+														_0: _elm_lang$svg$Svg_Attributes$y1('20'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$svg$Svg_Attributes$x1('55'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$svg$Svg_Attributes$y2('20'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$svg$Svg_Attributes$x2('65'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+																		_1: {ctor: '[]'}
+																	}
+																}
+															}
+														}
+													},
+													{ctor: '[]'}),
+												_1: {
+													ctor: '::',
+													_0: A2(
+														_elm_lang$svg$Svg$line,
+														{
+															ctor: '::',
+															_0: _elm_lang$svg$Svg_Attributes$y1('780'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$svg$Svg_Attributes$x1('55'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$svg$Svg_Attributes$y2('780'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$svg$Svg_Attributes$x2('65'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$svg$Svg_Attributes$stroke('#000'),
+																			_1: {ctor: '[]'}
+																		}
+																	}
+																}
+															}
+														},
+														{ctor: '[]'}),
+													_1: {
+														ctor: '::',
+														_0: A2(
+															_elm_lang$svg$Svg$text_,
+															{
+																ctor: '::',
+																_0: _elm_lang$svg$Svg_Attributes$x('20'),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$svg$Svg_Attributes$y('780'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$svg$Svg_Attributes$fontSize('8pt'),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$svg$Svg_Attributes$fontWeight('normal'),
+																				_1: {
+																					ctor: '::',
+																					_0: _elm_lang$svg$Svg_Attributes$fill('#000'),
+																					_1: {ctor: '[]'}
+																				}
+																			}
+																		}
+																	}
+																}
+															},
+															{
+																ctor: '::',
+																_0: _elm_lang$svg$Svg$text('0'),
+																_1: {ctor: '[]'}
+															}),
+														_1: {
+															ctor: '::',
+															_0: A2(
+																_elm_lang$svg$Svg$text_,
+																{
+																	ctor: '::',
+																	_0: _elm_lang$svg$Svg_Attributes$x('20'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$svg$Svg_Attributes$y('20'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$svg$Svg_Attributes$strokeWidth('0'),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$svg$Svg_Attributes$fontSize('8pt'),
+																				_1: {
+																					ctor: '::',
+																					_0: _elm_lang$svg$Svg_Attributes$fontWeight('normal'),
+																					_1: {
+																						ctor: '::',
+																						_0: _elm_lang$svg$Svg_Attributes$fill('#000'),
+																						_1: {ctor: '[]'}
+																					}
+																				}
+																			}
+																		}
+																	}
+																},
+																{
+																	ctor: '::',
+																	_0: _elm_lang$svg$Svg$text('760'),
+																	_1: {ctor: '[]'}
+																}),
+															_1: {ctor: '[]'}
+														}
+													}
+												}
+											}
+										},
+										_1: {ctor: '[]'}
 									}
-								}
-							}),
+								})),
 						_1: {ctor: '[]'}
 					}
 				}),
@@ -8862,28 +8940,20 @@ var _user$project$Main$model = {
 		_1: {
 			ctor: '::',
 			_0: {
-				realMin: 0,
-				min: 20,
-				firstQuartile: 200,
-				median: 240,
-				thirdQuartile: 300,
+				realMin: 30,
+				min: 200,
+				firstQuartile: 300,
+				median: 350,
+				thirdQuartile: 400,
 				max: 500,
-				realMax: 760,
+				realMax: 600,
 				outliers: {
 					ctor: '::',
-					_0: 0,
+					_0: 30,
 					_1: {
 						ctor: '::',
-						_0: 520,
-						_1: {
-							ctor: '::',
-							_0: 680,
-							_1: {
-								ctor: '::',
-								_0: 760,
-								_1: {ctor: '[]'}
-							}
-						}
+						_0: 680,
+						_1: {ctor: '[]'}
 					}
 				}
 			},
